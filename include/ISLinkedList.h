@@ -3,6 +3,8 @@
 #ifndef ISLINKED_LIST_H
 #define ISLINKED_LIST_H
 
+
+
 template <class T>
 class ISLinkedList
 {
@@ -23,7 +25,7 @@ public:
     virtual void tranverse() = 0;
     virtual T findAtIndex(int index) = 0;
     virtual void destroy() = 0;
-    virtual ISLinkedList<T>* clone() = 0;
+    // virtual ISLinkedList<T>* clone() = 0;
 };
 
 // Template implementation for ISLinkedList constructor
