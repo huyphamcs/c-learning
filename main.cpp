@@ -4,10 +4,12 @@
 #include <iostream>
 using namespace std;
 
-int main(){
-    Queue<int>* newQueue = new Queue<int>();
+int main()
+{
+    Queue<int> *newQueue = new Queue<int>();
     newQueue->print();
-    for (int i = 0; i < 10; i++) newQueue->enQueue(i);
+    for (int i = 0; i < 10; i++)
+        newQueue->enQueue(i);
     newQueue->print();
     newQueue->deQueue();
     newQueue->deQueue();
@@ -15,7 +17,7 @@ int main(){
     newQueue->print();
     newQueue->clear();
     newQueue->print();
-    
+
     delete newQueue;
 
     return 0;

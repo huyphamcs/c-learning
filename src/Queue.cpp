@@ -1,5 +1,6 @@
 #include "../include/INode.h"
 #include <iostream>
+#include "../include/Queue.h"
 using namespace std;
 
 template<class T>
