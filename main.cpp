@@ -1,162 +1,259 @@
 #include <iostream>
-#include <vector>
-#include <string>
-#include "include/QuickSort.h"
 using namespace std;
 
-template<typename T>
-void testQuickSort(T* arr, int size, const string& testName) {
-    cout << "\n--- " << testName << " ---" << endl;
-    cout << "Before: ";
-    for (int i = 0; i < size; i++) {
-        cout << arr[i] << " ";
-    }
-    cout << endl;
-    
-    quickSort(arr, size);
-    
-    cout << "After:  ";
-    for (int i = 0; i < size; i++) {
-        cout << arr[i] << " ";
-    }
-    cout << endl;
-}
+template <class T>
+class Node
+{
+public:
+    Node<T> *left;
+    T data;
+    Node<T> *right;
 
-int main() {
-    cout << "=== QUICK SORT TEST CASES ===" << endl;
-    
-    // Test Case 1: Original test case (with duplicates)
+    Node()
     {
-        int arr[] = {26, 33, 35, 29, 19, 12, 22, 12, 19, 22, 26, 29, 33, 35};
-        testQuickSort(arr, sizeof(arr) / sizeof(arr[0]), "Original Test Case (with Duplicates)");
+        left = nullptr;
+        right = nullptr;
     }
-    
-    // Test Case 2: Simple test case
+    Node(T data)
     {
-        int arr[] = {23, 78, 45, 8, 32, 56};
-        testQuickSort(arr, sizeof(arr) / sizeof(arr[0]), "Simple Test Case");
+        this->data = data;
+        left = nullptr;
+        right = nullptr;
     }
-    
-    // Test Case 3: Already sorted array
+    virtual ~Node() = default;
+};
+
+template <class T>
+class binarySearchTree
+{
+public:
+    Node<T> *root;
+    binarySearchTree()
     {
-        int arr[] = {1, 2, 3, 4, 5, 6, 7, 8};
-        testQuickSort(arr, sizeof(arr) / sizeof(arr[0]), "Already Sorted Array");
+        this->root = nullptr;
     }
-    
-    // Test Case 4: Reverse sorted array (worst case for simple pivot selection)
+
+    binarySearchTree(T data)
     {
-        int arr[] = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
-        testQuickSort(arr, sizeof(arr) / sizeof(arr[0]), "Reverse Sorted Array");
+        Node<T> *newNode = new Node<T>(data);
+        root = newNode;
     }
-    
-    // Test Case 5: Array with many duplicates
+    void preOrder()
     {
-        int arr[] = {5, 5, 2, 8, 5, 2, 9, 1, 5, 5, 8, 1};
-        testQuickSort(arr, sizeof(arr) / sizeof(arr[0]), "Array with Many Duplicates");
+        if (root == nullptr)
+            return;
+        cout << root->data << " ";
+        if (root->left != nullptr)
+        {
+            binarySearchTree<T> *left = new binarySearchTree<T>();
+            left->root = root->left;
+            left->preOrder();
+            delete left;
+        }
+        if (root->right != nullptr)
+        {
+            binarySearchTree<T> *right = new binarySearchTree<T>();
+            right->root = root->right;
+            right->preOrder();
+            delete right;
+        }
     }
-    
-    // Test Case 6: Single element
+
+    void inOrder()
     {
-        int arr[] = {42};
-        testQuickSort(arr, sizeof(arr) / sizeof(arr[0]), "Single Element");
+        if (root == nullptr)
+            return;
+        if (root->left != nullptr)
+        {
+            binarySearchTree<T> *left = new binarySearchTree<T>();
+            left->root = root->left;
+            left->inOrder();
+            delete left;
+        }
+        cout << root->data << " ";
+        if (root->right != nullptr)
+        {
+            binarySearchTree<T> *right = new binarySearchTree<T>();
+            right->root = root->right;
+            right->inOrder();
+            delete right;
+        }
     }
-    
-    // Test Case 7: Two elements (unsorted)
+    void postOrder()
     {
-        int arr[] = {7, 3};
-        testQuickSort(arr, sizeof(arr) / sizeof(arr[0]), "Two Elements (Unsorted)");
+        if (root == nullptr)
+            return;
+
+        if (root->left != nullptr)
+        {
+            binarySearchTree<T> *left = new binarySearchTree<T>();
+            left->root = root->left;
+            left->postOrder();
+            delete left;
+        }
+        if (root->right != nullptr)
+        {
+            binarySearchTree<T> *right = new binarySearchTree<T>();
+            right->root = root->right;
+            right->postOrder();
+            delete right;
+        }
+        cout << root->data << " ";
     }
-    
-    // Test Case 8: Two elements (already sorted)
+    void insert(T data)
     {
-        int arr[] = {3, 7};
-        testQuickSort(arr, sizeof(arr) / sizeof(arr[0]), "Two Elements (Already Sorted)");
+        Node<T> *newNode = new Node<T>(data);
+        if (root == nullptr)
+        {
+            root = newNode;
+            return;
+        }
+        Node<T> *tempPtr = root;
+        while (true)
+        {
+            if (data < tempPtr->data)
+            {
+                if (tempPtr->left == nullptr)
+                {
+                    tempPtr->left = newNode;
+                    break;
+                }
+                else
+                    tempPtr = tempPtr->left;
+            }
+            else
+            {
+                if (tempPtr->right == nullptr)
+                {
+                    tempPtr->right = newNode;
+                    break;
+                }
+                else
+                    tempPtr = tempPtr->right;
+            }
+        }
     }
-    
-    // Test Case 9: All same elements
+    void visualize(Node<T> *node = nullptr, string prefix = "", bool isLeft = true, bool isRoot = true)
     {
-        int arr[] = {7, 7, 7, 7, 7, 7, 7};
-        testQuickSort(arr, sizeof(arr) / sizeof(arr[0]), "All Same Elements");
+        if (isRoot)
+        {
+            node = root;
+            if (node == nullptr)
+            {
+                cout << "Empty tree" << endl;
+                return;
+            }
+            cout << "Root: " << node->data << endl;
+            if (node->left != nullptr || node->right != nullptr)
+            {
+                if (node->left != nullptr)
+                {
+                    visualize(node->left, "├── ", true, false);
+                }
+                if (node->right != nullptr)
+                {
+                    visualize(node->right, "└── ", false, false);
+                }
+            }
+            return;
+        }
+
+        if (node == nullptr)
+        {
+            return;
+        }
+
+        cout << prefix;
+        if (isLeft)
+        {
+            cout << "L: " << node->data << " (< " << node->data << ")" << endl;
+        }
+        else
+        {
+            cout << "R: " << node->data << " (>= " << node->data << ")" << endl;
+        }
+
+        if (node->left != nullptr || node->right != nullptr)
+        {
+            string newPrefix = prefix;
+            if (prefix == "├── ")
+                newPrefix = "│   ";
+            else if (prefix == "└── ")
+                newPrefix = "    ";
+
+            if (node->left != nullptr)
+            {
+                visualize(node->left, newPrefix + "├── ", true, false);
+            }
+            if (node->right != nullptr)
+            {
+                visualize(node->right, newPrefix + "└── ", false, false);
+            }
+        }
     }
-    
-    // Test Case 10: Negative numbers
+    bool existNode(T data)
     {
-        int arr[] = {-3, -1, -7, -2, -5, -10, -4};
-        testQuickSort(arr, sizeof(arr) / sizeof(arr[0]), "Negative Numbers");
+        Node<T> *tempPtr = root;
+        if (tempPtr->data == data)
+            return true;
+        while (true)
+        {
+            if (data < tempPtr->data)
+                tempPtr = tempPtr->left;
+            else
+                tempPtr = tempPtr->right;
+            if (tempPtr == nullptr)
+            {
+                return false;
+            }
+            else if (tempPtr->data == data)
+            {
+                return true;
+            }
+        }
     }
-    
-    // Test Case 11: Mixed positive and negative
+    Node<T> *findNode(T data)
     {
-        int arr[] = {-10, 5, -3, 0, 8, -1, 12, -7, 15};
-        testQuickSort(arr, sizeof(arr) / sizeof(arr[0]), "Mixed Positive and Negative");
+        Node<T> *tempPtr = root;
+        if (tempPtr->data == data)
+            return tempPtr;
+        while (true)
+        {
+            if (data < tempPtr->data)
+                tempPtr = tempPtr->left;
+            else
+                tempPtr = tempPtr->right;
+            if (tempPtr == nullptr)
+            {
+                return nullptr;
+            }
+            else if (tempPtr->data == data)
+            {
+                return tempPtr;
+            }
+        }
     }
-    
-    // Test Case 12: Large numbers
-    {
-        int arr[] = {1000000, 500000, 2000000, 100000, 750000, 1500000};
-        testQuickSort(arr, sizeof(arr) / sizeof(arr[0]), "Large Numbers");
-    }
-    
-    // Test Case 13: Random order
-    {
-        int arr[] = {17, 3, 44, 6, 20, 1, 35, 18, 9, 25, 12, 30};
-        testQuickSort(arr, sizeof(arr) / sizeof(arr[0]), "Random Order");
-    }
-    
-    // Test Case 14: Float numbers
-    {
-        float arr[] = {3.14f, 2.71f, 1.41f, 0.57f, 4.47f, 1.73f, 2.23f};
-        testQuickSort(arr, sizeof(arr) / sizeof(arr[0]), "Float Numbers");
-    }
-    
-    // Test Case 15: Characters
-    {
-        char arr[] = {'z', 'a', 'm', 'b', 'x', 'c', 'p', 'k', 'e'};
-        testQuickSort(arr, sizeof(arr) / sizeof(arr[0]), "Characters");
-    }
-    
-    // Test Case 16: Edge case with zero
-    {
-        int arr[] = {0, -1, 1, 0, 2, -2, 3, 0, -3};
-        testQuickSort(arr, sizeof(arr) / sizeof(arr[0]), "Array with Multiple Zeros");
-    }
-    
-    // Test Case 17: Pivot as smallest element
-    {
-        int arr[] = {1, 10, 9, 8, 7, 6, 5, 4, 3, 2};
-        testQuickSort(arr, sizeof(arr) / sizeof(arr[0]), "Pivot as Smallest Element");
-    }
-    
-    // Test Case 18: Pivot as largest element
-    {
-        int arr[] = {10, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-        testQuickSort(arr, sizeof(arr) / sizeof(arr[0]), "Pivot as Largest Element");
-    }
-    
-    // Test Case 19: Alternating pattern
-    {
-        int arr[] = {1, 10, 2, 9, 3, 8, 4, 7, 5, 6};
-        testQuickSort(arr, sizeof(arr) / sizeof(arr[0]), "Alternating Pattern");
-    }
-    
-    // Test Case 20: Min/Max integer values
-    {
-        int arr[] = {2147483647, -2147483648, 0, 1, -1, 1000, -1000};
-        testQuickSort(arr, sizeof(arr) / sizeof(arr[0]), "Min/Max Integer Values");
-    }
-    
-    // Test Case 21: Performance test - larger array
-    {
-        int arr[] = {50, 25, 75, 12, 37, 62, 87, 6, 18, 31, 43, 56, 68, 81, 93, 3, 15, 28, 40, 53, 65, 78, 21, 46, 59, 84, 9, 34, 71, 96};
-        testQuickSort(arr, sizeof(arr) / sizeof(arr[0]), "Performance Test (30 elements)");
-    }
-    
-    // Test Case 22: Array with pattern that tests partitioning
-    {
-        int arr[] = {5, 1, 5, 2, 5, 3, 5, 4, 5};
-        testQuickSort(arr, sizeof(arr) / sizeof(arr[0]), "Partitioning Test Pattern");
-    }
-    
-    cout << "\n=== ALL QUICK SORT TEST CASES COMPLETED ===" << endl;
+
+};
+
+int main()
+{
+    binarySearchTree<int> *newTree = new binarySearchTree<int>();
+    newTree->insert(15);
+    newTree->insert(6);
+    newTree->insert(23);
+    newTree->insert(4);
+    newTree->insert(5);
+    newTree->insert(71);
+    newTree->insert(7);
+    newTree->insert(50);
+    // newTree->inOrder();
+    newTree->visualize();
+    // newTree->preOrder();
+    // cout << newTree->existNode(10);
+    Node<int>* newNode = newTree->findNode(50);
+    cout << newNode << endl;
+    // cout << newNode->right->data << endl;
+
     return 0;
 }
