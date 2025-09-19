@@ -1,53 +1,118 @@
-#include <iostream>
+#include<iostream>
+#include<string.h>
+#include<vector>
 using namespace std;
 
-int linearSearch(int *arr, int size, int val)
-{
-    int outIndex = 0;
-    for (outIndex = 0; outIndex < size; outIndex++)
-    {
-        if (arr[outIndex] == val)
-            return outIndex;
-    }
-    return -1;
+void printArray(int n, int c = 0){
+    // if (n==0) cout << n << " ";
+    if (n>0)printArray(n-1,1);
+    if (c == 1) cout << n << ", ";
+    else cout << n << endl;
+
 }
 
-int jumpSearch(int *arr, int size, int val, int blockSize)
+void printFromTop(int n){
+    if (n>=-4){
+        cout << n << " ";
+        printFromTop(n-5);
+    }
+}
+
+// int getCount(int n){
+//     int output = 0;
+//     if (n>0){
+//         output = 1 + getCount(n-5);
+//     }
+//     return output;
+// }
+
+void printFromBottom(int n, int c = 0){
+    // int count = getCount(n);
+    if (n>0) {
+        printFromBottom(n-5, 1);
+        if (c==0) cout << n;
+        else cout << n << " ";
+    }
+}
+void printPattern(int n) {
+    if (n==0) cout << n;
+    printFromTop(n);
+    printFromBottom(n);
+}
+
+int findMax(int* arr, int length, int max = 0)
 {
-    int outIndex = 0;
-    int segments = size / blockSize;
-    for (int i = 0; i < segments; i++)
-    {
-        if (arr[i * blockSize] >= val && arr[(i + 1) * blockSize] < val)
-        {
-            cout << "FOUND" << endl;
-            outIndex = i * blockSize + linearSearch(arr + i * blockSize, blockSize, val);
-            return outIndex;
+    // max = *arr;
+    if (max < *arr){
+        max = *arr;
+    }
+    if (length>1)max = findMax(arr+1, length-1, max);
+    return max;
+}
+
+string preprocessing(string str){
+    string output = "";
+    int size = str.length();
+    for (int i = 0; i < size; i++){
+        if (str[i]!= ' ') output += str[i];
+    }
+    return output;
+} 
+
+bool isPalindrome(string str) 
+{ 
+    str = preprocessing(str);
+    int size = str.length();
+    if (size <=1) return 1;
+    if (str[0] == str[size-1]) return isPalindrome(str.substr(1, size-2));
+    return 0;
+}
+
+// string reverseSentence(string s, string tempStr = "", string tempChar = "") {
+//     // STUDENT ANSWER
+//     string output = "";
+
+//     if (tempChar[0]!=' '){
+//         tempStr += s[0];
+//         reverseSentence(s.substr(1,s.length()-1), tempStr, );
+//     }
+
+//     return output;
+// }
+
+bool consecutiveOnes(vector<int>& nums) {
+    // STUDENT ANSWER
+    size_t size = nums.size();
+    if (size == 0)return true;
+    size_t left = 0;
+    size_t right = size-1;
+    while (true){
+        if ((nums[left] == 1) || (left == size)) break;
+        left++;
+    }
+    while(true){
+        if ((nums[right] == 1) || (right == 0)) break;
+        right --;
+    }
+    // cout << left << " " << right << endl;
+    // if (left == right || left == right - 1) return true;
+    if (left < right){
+        while(true){
+            if (nums[left] == 1) left++;
+            if (left == right) return true;
+            if(nums[left] == 0) return false;
+            if (nums[right] == 1) right--;
+            if(nums[left] == 0) return false;
+
+            if (left == right) return true;
+            
+            // return false;
         }
     }
-    return linearSearch(arr + segments*blockSize, size - segments*blockSize , val);
-
-    return -1;
+    return true;
 }
-
-double interpolationSearch (int* arr, int size, int val){
-    double pos = (val - arr[0])*(size-1)/(arr[size-1]-arr[0]);
-    cout << pos << endl;
-    if (arr[(int)pos] == val) return pos;
-    else if (val<arr[(int)pos]) pos = interpolationSearch(arr, pos, val);
-    else pos = pos + interpolationSearch(arr+1, size-pos-1, val);
-    return pos;
-}
-
-int main()
-{
-    int arr[] = {0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610};
-    int size = sizeof(arr) / sizeof(arr[0]);
-    int blockSize = 4;
-    // cout << jumpSearch(arr, size, 21, blockSize) << endl;
-    // cout << interpolationSearch(arr, size, 233) << endl;
-    for (int i = 0; i < size; i++){
-        cout << interpolationSearch(arr, size, arr[i]) << "-----" << arr[i] << endl;
-    }
-    return 0;
+int main () {
+    vector<int> nums {1,1, 1,1,1,1,1,1};
+    cout << consecutiveOnes(nums);
+    return 0;   
 }
