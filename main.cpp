@@ -1,37 +1,43 @@
-#include <iostream>
-#include <stack>
-#include <algorithm>
-#include <vector>
+#include<iostream>
+#include<string>
+#include<stack>
+#include<sstream>
+
 using namespace std;
 
-void clear(stack<int> &s)
-{
-    while (!s.empty())
-        s.pop();
+bool isNumber(string s){
+    if (s.size() == 1 && s[0]>='0' && s[0] <='9') return 1;
+    if (s.size()>1) return 1;
+    return 0;
+}
+// bool isOperator (string s){
+//     return !isNumber(s);
+// }
+
+int evaluatePostfix(string expr){
+    /*TODO*/
+    stringstream ss(expr);
+    string token;
+    stack<int> s;
+    while(ss>>token){
+        if(isNumber(token)) s.push(stoi(token));
+        else {
+            int operand1, operand2, result;
+            operand2 = s.top();
+            s.pop();
+            operand1 = s.top();
+            s.pop();
+            if (token == "+") result = operand1 + operand2;
+            else if (token == "-") result = operand1 - operand2;
+            else if (token == "*") result = operand1 * operand2;
+            else if (token == "/") result = operand1 / operand2;
+            s.push(result);
+        }
+    }
+    return s.top();
 }
 
-int main()
-{
-    // vector<int> v = {100, 80, 60, 70, 60, 75, 85};
-    vector<int> v = {31,27,14,21,30,22};
-
-    vector<int> stock_span;
-    stock_span.push_back(1);
-    size_t vSize = v.size();
-    for (size_t i = 1; i < vSize; i++){
-        vector<int> temp;
-        stack<int> sTemp;
-        for (int j = 0; j <= i; j++){
-            if (v[j] < v[i]) sTemp.push(0);
-            else{
-                temp.push_back(sTemp.size());
-                clear(sTemp);
-            } 
-        }
-        stock_span.push_back((*max_element(temp.begin(), temp.end())) + 1);
-    }
-    for (int x: stock_span) cout << x << " ";
-    cout << endl;
-
+int main () {
+    cout << evaluatePostfix("100 200 + 2 / 5 * 7 +");
     return 0;
 }
