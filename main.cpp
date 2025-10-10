@@ -1,43 +1,60 @@
-#include<iostream>
-#include<string>
-#include<stack>
-#include<sstream>
-
+#include <iostream>
+#include <queue>
+#include <vector>
 using namespace std;
 
-bool isNumber(string s){
-    if (s.size() == 1 && s[0]>='0' && s[0] <='9') return 1;
-    if (s.size()>1) return 1;
-    return 0;
-}
-// bool isOperator (string s){
-//     return !isNumber(s);
-// }
-
-int evaluatePostfix(string expr){
-    /*TODO*/
-    stringstream ss(expr);
-    string token;
-    stack<int> s;
-    while(ss>>token){
-        if(isNumber(token)) s.push(stoi(token));
-        else {
-            int operand1, operand2, result;
-            operand2 = s.top();
-            s.pop();
-            operand1 = s.top();
-            s.pop();
-            if (token == "+") result = operand1 + operand2;
-            else if (token == "-") result = operand1 - operand2;
-            else if (token == "*") result = operand1 * operand2;
-            else if (token == "/") result = operand1 / operand2;
-            s.push(result);
+void bfs(vector<vector<int>> graph, int start) {
+    vector<bool> isVisited(graph.size(), 0);
+    // for (bool x: isVisited) cout << x << " ";
+    queue<int> q;
+    // Init
+    cout << start << " ";
+    q.push(start);
+    isVisited[start] = 1;
+    // for (bool x: isVisited) cout << x << " ";
+    // Iteration
+    while(!q.empty()){
+        int curr = q.front();
+        q.pop();
+        for (int x : graph[curr]){
+            if (isVisited[x] == 0){
+                q.push(x);
+                cout << x << " ";
+                isVisited[x] = 1;
+            }
         }
     }
-    return s.top();
+
 }
 
-int main () {
-    cout << evaluatePostfix("100 200 + 2 / 5 * 7 +");
+int main()
+{
+    int init_graph[10][10] = {{0, 1, 1, 0, 1, 0, 1, 0, 1, 0},
+                              {0, 0, 1, 1, 0, 0, 0, 1, 0, 0},
+                              {0, 1, 0, 0, 0, 1, 1, 0, 1, 1},
+                              {1, 0, 0, 0, 0, 0, 0, 1, 0, 0},
+                              {0, 1, 0, 0, 0, 0, 0, 1, 0, 0},
+                              {1, 0, 1, 0, 1, 0, 0, 0, 1, 0},
+                              {0, 0, 1, 1, 0, 1, 0, 0, 0, 0},
+                              {1, 0, 0, 0, 0, 1, 1, 0, 1, 0},
+                              {0, 0, 0, 0, 0, 1, 0, 1, 0, 1},
+                              {1, 0, 1, 0, 1, 0, 0, 0, 1, 0}};
+    int n = 10;
+    vector<vector<int>> graph(n, vector<int>());
+    for (int i = 0; i < n; ++i)
+    {
+        for (int j = 0; j < n; ++j)
+        {
+            if (init_graph[i][j])
+                graph[i].push_back(j);
+        }
+    }
+    for (int i = 0; i < 10; i++){
+        cout << i << ": ";
+        for (size_t j = 0; j < graph[i].size(); j++) cout << graph[i][j] << " ";
+        cout << endl;
+
+    }
+    bfs(graph,0);
     return 0;
 }
