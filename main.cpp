@@ -2,71 +2,41 @@
 #include <vector>
 #include <queue>
 using namespace std;
-bool isBipartite(const std::vector<std::vector<int>>& graph) {
-    int n = graph.size();
-    if (n == 0) {
-        return true;
+
+int getMSB(long long n){
+    if (n>=0 && n<=9) return n;
+    while(n>10){
+        n = n /10;
     }
-
-    // Use -1 to indicate no color, 0 for the first color, 1 for the second.
-    // The vector is correctly sized to the number of nodes.
-    std::vector<int> color(n, -1);
-
-    // Loop through every node in the graph.
-    for (int start_node = 0; start_node < n; ++start_node) {
-        // If the node has not been colored yet, it's part of a new component.
-        // Start a BFS from this node.
-        if (color[start_node] == -1) {
-            std::queue<int> q;
-            q.push(start_node);
-            color[start_node] = 0; // Start coloring with color 0.
-
-            while (!q.empty()) {
-                int u = q.front();
+    return n;
+}
+int getLSB(long long n){
+    return n%10;
+}
+long long nthNiceNumber(int n) {
+    long long output;
+    if (n==1) return 2;
+    if (n==2) return 5;
+    queue<long long> q;
+    q.push(2);
+    q.push(5);
+    for (int i = 0; i < n - 2; i++){
+        if(true) {
+            if(getLSB(q.back()) == 5)q.push(q.front()*10 + 2);
+            else {
+                q.push(q.back()+3);
                 q.pop();
-
-                for (int v : graph[u]) {
-                    // If an adjacent node has the same color, it's not bipartite.
-                    if (color[v] == color[u]) {
-                        return false;
-                    }
-
-                    // If the adjacent node is not yet colored, color it with the
-                    // opposite color and add it to the queue.
-                    if (color[v] == -1) {
-                        color[v] = 1 - color[u]; // A clever trick to flip 0 to 1 and 1 to 0.
-                        q.push(v);
-                    }
-                }
             }
         }
-    }
 
-    // If all components are checked and no conflicts were found, the graph is bipartite.
-    return true;
+    }
+    return q.back();
 }
 
-void test()
-{
-    int G[1][1] = {{1}};
-    int n = 1;
-
-    vector<vector<int>> graph(n, vector<int>());
-    for (int i = 0; i < n; ++i)
-    {
-        for (int j = 0; j < n; ++j)
-        {
-            if (G[i][j])
-                graph[i].push_back(j);
-        }
-    }
-
-    isBipartite(graph) ? cout << "Yes" : cout << "No";
-    // cout << endl;
-}
 
 int main()
 {
-    test();
-    return 0;
+    // cout << getMSB(254871);
+    cout << nthNiceNumber(10000);
+    return 0;   
 }
