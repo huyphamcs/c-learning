@@ -1,60 +1,72 @@
 #include <iostream>
-#include <queue>
 #include <vector>
+#include <queue>
 using namespace std;
+bool isBipartite(const std::vector<std::vector<int>>& graph) {
+    int n = graph.size();
+    if (n == 0) {
+        return true;
+    }
 
-void bfs(vector<vector<int>> graph, int start) {
-    vector<bool> isVisited(graph.size(), 0);
-    // for (bool x: isVisited) cout << x << " ";
-    queue<int> q;
-    // Init
-    cout << start << " ";
-    q.push(start);
-    isVisited[start] = 1;
-    // for (bool x: isVisited) cout << x << " ";
-    // Iteration
-    while(!q.empty()){
-        int curr = q.front();
-        q.pop();
-        for (int x : graph[curr]){
-            if (isVisited[x] == 0){
-                q.push(x);
-                cout << x << " ";
-                isVisited[x] = 1;
+    // Use -1 to indicate no color, 0 for the first color, 1 for the second.
+    // The vector is correctly sized to the number of nodes.
+    std::vector<int> color(n, -1);
+
+    // Loop through every node in the graph.
+    for (int start_node = 0; start_node < n; ++start_node) {
+        // If the node has not been colored yet, it's part of a new component.
+        // Start a BFS from this node.
+        if (color[start_node] == -1) {
+            std::queue<int> q;
+            q.push(start_node);
+            color[start_node] = 0; // Start coloring with color 0.
+
+            while (!q.empty()) {
+                int u = q.front();
+                q.pop();
+
+                for (int v : graph[u]) {
+                    // If an adjacent node has the same color, it's not bipartite.
+                    if (color[v] == color[u]) {
+                        return false;
+                    }
+
+                    // If the adjacent node is not yet colored, color it with the
+                    // opposite color and add it to the queue.
+                    if (color[v] == -1) {
+                        color[v] = 1 - color[u]; // A clever trick to flip 0 to 1 and 1 to 0.
+                        q.push(v);
+                    }
+                }
             }
         }
     }
 
+    // If all components are checked and no conflicts were found, the graph is bipartite.
+    return true;
 }
 
-int main()
+void test()
 {
-    int init_graph[10][10] = {{0, 1, 1, 0, 1, 0, 1, 0, 1, 0},
-                              {0, 0, 1, 1, 0, 0, 0, 1, 0, 0},
-                              {0, 1, 0, 0, 0, 1, 1, 0, 1, 1},
-                              {1, 0, 0, 0, 0, 0, 0, 1, 0, 0},
-                              {0, 1, 0, 0, 0, 0, 0, 1, 0, 0},
-                              {1, 0, 1, 0, 1, 0, 0, 0, 1, 0},
-                              {0, 0, 1, 1, 0, 1, 0, 0, 0, 0},
-                              {1, 0, 0, 0, 0, 1, 1, 0, 1, 0},
-                              {0, 0, 0, 0, 0, 1, 0, 1, 0, 1},
-                              {1, 0, 1, 0, 1, 0, 0, 0, 1, 0}};
-    int n = 10;
+    int G[1][1] = {{1}};
+    int n = 1;
+
     vector<vector<int>> graph(n, vector<int>());
     for (int i = 0; i < n; ++i)
     {
         for (int j = 0; j < n; ++j)
         {
-            if (init_graph[i][j])
+            if (G[i][j])
                 graph[i].push_back(j);
         }
     }
-    for (int i = 0; i < 10; i++){
-        cout << i << ": ";
-        for (size_t j = 0; j < graph[i].size(); j++) cout << graph[i][j] << " ";
-        cout << endl;
 
-    }
-    bfs(graph,0);
+    isBipartite(graph) ? cout << "Yes" : cout << "No";
+    // cout << endl;
+}
+
+int main()
+{
+    test();
     return 0;
 }
