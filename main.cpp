@@ -1,42 +1,71 @@
 #include <iostream>
-#include <vector>
-#include <queue>
 using namespace std;
 
-int getMSB(long long n){
-    if (n>=0 && n<=9) return n;
-    while(n>10){
-        n = n /10;
+template <class T>
+class Sorting
+{
+private:
+    static void printArray(T *start, T *end)
+    {
+        int size = end - start;
+        for (int i = 0; i < size; i++)
+            cout << start[i] << " ";
+        cout << endl;
     }
-    return n;
-}
-int getLSB(long long n){
-    return n%10;
-}
-long long nthNiceNumber(int n) {
-    long long output;
-    if (n==1) return 2;
-    if (n==2) return 5;
-    queue<long long> q;
-    q.push(2);
-    q.push(5);
-    for (int i = 0; i < n - 2; i++){
-        if(true) {
-            if(getLSB(q.back()) == 5)q.push(q.front()*10 + 2);
-            else {
-                q.push(q.back()+3);
-                q.pop();
+
+public:
+    // TODO: Write your code here
+    static void sortSegment(T *start, T *end, int segment_idx, int cur_segment_total)
+    {
+        int arrSize = end - start;
+        int num_elements = 0;
+        for (int i = segment_idx; i < arrSize; i += cur_segment_total)
+        {
+            // cout << i << " ";
+            num_elements++;
+        }
+        // cout << num_elements << endl;
+        for (int i = 0; i < num_elements - 1; i++)
+        {
+            for (int j = 0; j < num_elements - i - 1; j++)
+            {
+                int first_index = segment_idx + cur_segment_total * j;
+                int second_index = segment_idx + cur_segment_total * (j + 1);
+                if (start[first_index] > start[second_index])
+                {
+                    // cout << start[first_index] << " " << start[second_index] << endl;
+                    int temp = start[first_index];
+                    start[first_index] = start[second_index];
+                    start[second_index] = temp;
+                }
             }
         }
+        
 
     }
-    return q.back();
-}
+    static void ShellSort(T *start, T *end, int *num_segment_list, int num_phases)
+    {
+        for (int i = num_phases - 1; i >= 0; i--){
+            for (int j = 0; j < num_segment_list[i]; j++){
+                sortSegment(start, end, j, num_segment_list[i]);
+            }
+            cout << num_segment_list[i] << " segments: ";
+            printArray(start, end);
+        }
+    }
+};
 
+void test()
+{
+    int num_segment_list[] = {1, 3, 5};
+    int num_phases = 3;
+    int array[] = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+
+    Sorting<int>::ShellSort(&array[0], &array[10], &num_segment_list[0], num_phases);
+}
 
 int main()
 {
-    // cout << getMSB(254871);
-    cout << nthNiceNumber(10000);
-    return 0;   
+    test();
+    return 0;
 }
