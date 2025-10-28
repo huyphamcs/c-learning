@@ -1,112 +1,71 @@
-#include <sstream>
+#include <vector>
 #include <iostream>
-#include <type_traits>
+#include <algorithm>
 using namespace std;
-template <class T>
-class Sorting
+void sortByFrequency(int arr[], int n)
 {
-private:
-    static void printArray(T *start, T *end)
+    if (n <= 2)
+        return;
+    vector<int> temp;
+    for (int i = 0; i < n; i++)
     {
-        int size = end - start;
-        for (int i = 0; i < size - 1; i++)
-            cout << start[i] << " ";
-        cout << start[size - 1];
-        cout << endl;
+        temp.push_back(arr[i]);
     }
-
-    static void merge(T *start, T *middle, T *end)
+    sort(arr, arr + n);
+    // cout << "SORTED: ";
+    // for (int i = 0; i < n; i++) cout << arr[i] << " ";
+    // cout << endl;
+    int i = 0;
+    vector<vector<int>> f;
+    while (i < n)
     {
-        InsertionSort(start, end);
-    }
-
-public:
-    static void InsertionSort(T *start, T *end)
-    {
-        int size = end - start; // 6
-        for (int i = 1; i < size; i++)
+        int count = 1;
+        // int first_index = i;
+        while (arr[i] == arr[i + 1] && i != n - 1)
         {
-            T *curr = start + i;
-            while (*curr < *(curr - 1) && curr > start)
-            {
-                T temp = *curr;
-                *curr = *(curr - 1);
-                *(curr - 1) = temp;
-                curr--;
-            }
+            count++;
+            i++;
         }
+        f.push_back({arr[i], count, (int)((long int)&(*find(temp.begin(), temp.end(), arr[i])) - (long int)&(*temp.begin())) / 4});
+        i++;
     }
-    static void TimSort(T *start, T *end, int min_size)
+    // for (vector<int> x: f){
+    //     // for (int y: x) cout << y << " ";
+    //     cout << x[1] << " ";
+    // }
+    // cout << endl;
+    auto cmp = [&](vector<int> a, vector<int> b)
     {
-        // TODO
-        if (start == end)
-            return;
-        // You must print out the array after using insertion sort and everytime calling method merge.
-        T *left = start;
-        T *right = end;
-        int size = right - left;
-        int segments = 0;
-        for (int i = 0; i < size; i += min_size)
+        if (a[1] == b[1])
+            return (a[2] < b[2]);
+        return a[1] > b[1];
+    };
+    sort(f.begin(), f.end(), cmp);
+    int index = 0;
+    for (vector<int> x : f)
+    {
+        // for (int y: x) cout << y << " ";
+        // cout << x[0] << " " << x[1] << " " << x[2] << endl;
+        for (int i = 0; i < x[1]; i++)
         {
-            if (left + i + 1 * min_size <= right)
-            {
-                // cout << "TRUE" << endl;
-                // cout << "Before: ";
-                // printArray(left+i, left+i+4);
-                InsertionSort(left + i, left + i + min_size);
-                // cout << "After: ";
-                // printArray(left+i,left+i+4);
-            }
-            else
-            {
-                // cout << "FALSE" << endl;
-                // cout << "Before: ";
-                // printArray(left+i,end);
-                // printArray(left+i,right);
-                InsertionSort(left + i, right);
-                // cout << "After: ";
-                // printArray(left+i,end);
-            }
-            segments++;
+            arr[index + i] = x[0];
+            // cout << index + i << " " << arr[index+i] << endl;
         }
-        cout << "Insertion Sort: ";
-        printArray(left, right);
-        // cout << segments<<endl;
-        int overall_merge_time = 1;
-        while (segments > 1)
-        {
-            int merge_time = (segments % 2 == 0) ? segments / 2 : segments / 2 + 1;
-
-            for (int i = 0; i < merge_time; i++)
-            {
-                if (i != merge_time - 1)
-                    merge(start + i * min_size * 2, start + i * min_size * 2 + min_size, start + i * min_size * 2 + 2 * min_size);
-                else
-                {
-                    if (segments == 2)
-                        merge(start, start + 1, end);
-                    else
-                    {
-                    }
-                }
-                cout << "Merge " << overall_merge_time++ << ": ";
-                printArray(start, end);
-            }
-
-            segments = merge_time;
-            min_size *= 2;
-        }
-        merge(start, start + 1, end);
+        index+=x[1];
     }
-};
+}
+
 int main()
 {
+    // int arr[] = {-4, 1, 2, 2, -4, 9, 1, -1};
+    
+    int arr[] = {5, 5, 4, 6, 4};
 
-    int array[] = {19, 20, 18, 17, 12, 13, 14, 15, 1, 2, 9, 6, 4, 7, 11, 16, 10, 8, 5, 3, 5, 2, 4, 1, 3};
-    cout << "Original Array: ";
-    for (int x: array) cout << x << " "; cout << endl;
-    int min_size = 4;
-    int size = sizeof(array)/sizeof(array[0]);
-    Sorting<int>::TimSort(&array[0], &array[size], min_size);
+    int n = sizeof(arr) / sizeof(arr[0]);
+
+    sortByFrequency(arr, n);
+
+    for (int i = 0; i < n; i++)
+        cout << arr[i] << " ";
     return 0;
 }
