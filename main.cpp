@@ -1,71 +1,95 @@
-#include <vector>
 #include <iostream>
-#include <algorithm>
 using namespace std;
-void sortByFrequency(int arr[], int n)
+void reheapDown(int maxHeap[], int n, int index)
 {
-    if (n <= 2)
-        return;
-    vector<int> temp;
-    for (int i = 0; i < n; i++)
+    
+    while (true)
     {
-        temp.push_back(arr[i]);
-    }
-    sort(arr, arr + n);
-    // cout << "SORTED: ";
-    // for (int i = 0; i < n; i++) cout << arr[i] << " ";
-    // cout << endl;
-    int i = 0;
-    vector<vector<int>> f;
-    while (i < n)
-    {
-        int count = 1;
-        // int first_index = i;
-        while (arr[i] == arr[i + 1] && i != n - 1)
+        int l = 2 * index + 1;
+        int r = l + 1;
+        if (l > n - 1)
+            break;
+        else if (l == n - 1)
         {
-            count++;
-            i++;
+            if (maxHeap[index] < maxHeap[l])
+            {
+                int temp = maxHeap[index];
+                maxHeap[index] = maxHeap[l];
+                maxHeap[l] = temp;
+                index = l;
+            }
         }
-        f.push_back({arr[i], count, (int)((long int)&(*find(temp.begin(), temp.end(), arr[i])) - (long int)&(*temp.begin())) / 4});
-        i++;
-    }
-    // for (vector<int> x: f){
-    //     // for (int y: x) cout << y << " ";
-    //     cout << x[1] << " ";
-    // }
-    // cout << endl;
-    auto cmp = [&](vector<int> a, vector<int> b)
-    {
-        if (a[1] == b[1])
-            return (a[2] < b[2]);
-        return a[1] > b[1];
-    };
-    sort(f.begin(), f.end(), cmp);
-    int index = 0;
-    for (vector<int> x : f)
-    {
-        // for (int y: x) cout << y << " ";
-        // cout << x[0] << " " << x[1] << " " << x[2] << endl;
-        for (int i = 0; i < x[1]; i++)
+        else if (l < n - 1)
         {
-            arr[index + i] = x[0];
-            // cout << index + i << " " << arr[index+i] << endl;
+            if (maxHeap[index] >= maxHeap[l] && maxHeap[index] >= maxHeap[r])
+                break;
+            else if (maxHeap[index] < maxHeap[l] && maxHeap[index] > maxHeap[r])
+            {
+                // Swap index and left child
+                int temp = maxHeap[index];
+                maxHeap[index] = maxHeap[l];
+                maxHeap[l] = temp;
+                index = l;
+            }
+            else if (maxHeap[index] > maxHeap[l] && maxHeap[index] < maxHeap[r])
+            {
+                // Swap index and right child
+                int temp = maxHeap[index];
+                maxHeap[index] = maxHeap[r];
+                maxHeap[r] = temp;
+                index = r;
+            }
+            else if (maxHeap[index] < maxHeap[l] && maxHeap[index] < maxHeap[r])
+            {
+                // Root is smaller than both 2 children
+                if (maxHeap[l] > maxHeap[r])
+                {
+                    // Swap root with left child
+                    int temp = maxHeap[index];
+                    maxHeap[index] = maxHeap[l];
+                    maxHeap[l] = temp;
+                    index = l;
+                }
+                else
+                {
+                    // Swap root with right child
+                    int temp = maxHeap[index];
+                    maxHeap[index] = maxHeap[r];
+                    maxHeap[r] = temp;
+                    index = r;
+                }
+            }
         }
-        index+=x[1];
     }
 }
 
+void reheapUp(int maxHeap[], int n, int index)
+{
+    int i = index;
+    if (i == 0)
+        return;
+    while (i > 0)
+    {
+        int parent = (i - 1) / 2;
+        if (maxHeap[parent] < maxHeap[i])
+        {
+            int temp = maxHeap[parent];
+            maxHeap[parent] = maxHeap[i];
+            maxHeap[i] = temp;
+            i = parent;
+        }
+        else
+            break;
+    }
+}
 int main()
 {
-    // int arr[] = {-4, 1, 2, 2, -4, 9, 1, -1};
-    
-    int arr[] = {5, 5, 4, 6, 4};
-
-    int n = sizeof(arr) / sizeof(arr[0]);
-
-    sortByFrequency(arr, n);
-
-    for (int i = 0; i < n; i++)
+    int arr[] = {1, 2, 3, 4, 5, 6, 7, 8};
+    int size = sizeof(arr) / sizeof(arr[0]);
+    reheapDown(arr, size, 0);
+    cout << "[ ";
+    for (int i = 0; i < size; i++)
         cout << arr[i] << " ";
+    cout << "]";
     return 0;
 }
